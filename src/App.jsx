@@ -1,8 +1,8 @@
 import { useState, useRef, useCallback } from "react";
 
 const CELL_COUNT = 6;
-const COLS = 3;
-const ROWS = 2;
+const COLS = 2;
+const ROWS = 3;
 
 // ── シェア画像生成 ──────────────────────────────────────────────
 // img要素からBlob URL経由でCanvasに描く（CORS回避）
@@ -30,9 +30,9 @@ async function generateShareCanvas(cells, authorName, imgEls) {
 
   // BG
   const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-  bgGrad.addColorStop(0, "#08080f"); bgGrad.addColorStop(1, "#0c0d20");
+  bgGrad.addColorStop(0, "#ffffff"); bgGrad.addColorStop(1, "#f3f4f6");
   ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, W, H);
-  ctx.strokeStyle = "rgba(99,102,241,0.07)"; ctx.lineWidth = 0.5;
+  ctx.strokeStyle = "rgba(99,102,241,0.08)"; ctx.lineWidth = 0.5;
   for (let x = 0; x < W; x += 36) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
   for (let y = 0; y < H; y += 36) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
 
@@ -40,7 +40,7 @@ async function generateShareCanvas(cells, authorName, imgEls) {
   ctx.textAlign = "center";
   ctx.font = "bold 10px Arial"; ctx.fillStyle = "#6366f1";
   ctx.fillText("MY  DOZLE-SHA", W/2, PAD + 16);
-  ctx.font = "bold 18px Arial"; ctx.fillStyle = "#fff";
+  ctx.font = "bold 18px Arial"; ctx.fillStyle = "#111";
   ctx.fillText(authorName ? `${authorName} を構成する6つのドズル社動画` : "私を構成する6つのドズル社動画", W/2, PAD + 44);
   ctx.strokeStyle = "rgba(99,102,241,0.35)"; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(PAD, PAD+56); ctx.lineTo(W-PAD, PAD+56); ctx.stroke();
@@ -52,13 +52,13 @@ async function generateShareCanvas(cells, authorName, imgEls) {
     const y = HEADER_H + PAD + row * (CELL_H + GAP);
 
     // Cell bg
-    ctx.fillStyle = "rgba(255,255,255,0.03)";
+    ctx.fillStyle = "rgba(0,0,0,0.04)";
     ctx.beginPath(); ctx.roundRect(x, y, CELL_W, CELL_H, 7); ctx.fill();
     ctx.strokeStyle = "rgba(99,102,241,0.22)"; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.roundRect(x, y, CELL_W, CELL_H, 7); ctx.stroke();
 
     // Number
-    ctx.fillStyle = "rgba(99,102,241,0.55)"; ctx.font = "bold 9px Arial";
+    ctx.fillStyle = "rgba(99,102,241,0.5)"; ctx.font = "bold 9px Arial";
     ctx.textAlign = "left"; ctx.fillText(`${i+1}`, x+6, y+14);
 
     if (cells[i] && imgEls[i]) {
@@ -83,14 +83,14 @@ async function generateShareCanvas(cells, authorName, imgEls) {
         ctx.restore();
       } catch(e) {
         // fallback color
-        ctx.fillStyle = "rgba(99,102,241,0.12)";
+        ctx.fillStyle = "rgba(99,102,241,0.08)";
         ctx.beginPath(); ctx.roundRect(x, y, CELL_W, CELL_H, 7); ctx.fill();
       }
     }
   }
 
   // Footer
-  ctx.textAlign = "center"; ctx.fillStyle = "rgba(99,102,241,0.4)";
+  ctx.textAlign = "center"; ctx.fillStyle = "rgba(99,102,241,0.7)";
   ctx.font = "9px Arial";
   ctx.fillText("#My3dozlesha  #ドズル社  youtube.com/@dozle", W/2, H - 14);
 
@@ -224,7 +224,7 @@ export default function App() {
   const thumbUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#08080f", backgroundImage: "radial-gradient(ellipse at 20% 0%, rgba(99,102,241,0.11) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(56,189,248,0.07) 0%, transparent 50%)", fontFamily: "'Noto Sans JP','Hiragino Sans',sans-serif", color: "#fff", padding: "28px 16px 80px" }}>
+    <div style={{ minHeight: "100vh", background: "#f8f9ff", backgroundImage: "radial-gradient(ellipse at 20% 0%, rgba(99,102,241,0.07) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(56,189,248,0.05) 0%, transparent 50%)", fontFamily: "'Noto Sans JP','Hiragino Sans',sans-serif", color: "#111", padding: "28px 16px 80px" }}>
 
       {/* Toast */}
       {toast && (
@@ -236,11 +236,11 @@ export default function App() {
       {/* ── Search Modal ── */}
       {activeCell !== null && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }} onClick={closeModal}>
-          <div style={{ background: "#0e0e20", border: "1px solid #1e1e3c", borderRadius: 20, padding: "22px 20px", width: "100%", maxWidth: 460, maxHeight: "82vh", display: "flex", flexDirection: "column", gap: 14, boxShadow: "0 24px 64px rgba(0,0,0,0.75)" }} onClick={e => e.stopPropagation()}>
+          <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 20, padding: "22px 20px", width: "100%", maxWidth: 460, maxHeight: "82vh", display: "flex", flexDirection: "column", gap: 14, boxShadow: "0 24px 64px rgba(0,0,0,0.75)" }} onClick={e => e.stopPropagation()}>
 
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 14, fontWeight: 800, color: "#e2e8f0" }}>スロット {activeCell + 1} を選ぶ</span>
-              <button onClick={closeModal} style={{ background: "none", border: "none", color: "#444", fontSize: 20, cursor: "pointer", lineHeight: 1 }}>×</button>
+              <span style={{ fontSize: 14, fontWeight: 800, color: "#111" }}>スロット {activeCell + 1} を選ぶ</span>
+              <button onClick={closeModal} style={{ background: "none", border: "none", color: "#999", fontSize: 20, cursor: "pointer", lineHeight: 1 }}>×</button>
             </div>
 
             {/* Search bar */}
@@ -252,7 +252,7 @@ export default function App() {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && doSearch(searchQuery)}
-                style={{ flex: 1, background: "#090912", border: "1px solid #1e1e38", borderRadius: 10, padding: "9px 12px", color: "#fff", fontSize: 12, outline: "none" }}
+                style={{ flex: 1, background: "#f9fafb", border: "1px solid #d1d5db", borderRadius: 10, padding: "9px 12px", color: "#111", fontSize: 12, outline: "none" }}
                 onFocus={e => e.target.style.borderColor = "#6366f1"}
                 onBlur={e => e.target.style.borderColor = "#1e1e38"}
               />
@@ -267,7 +267,7 @@ export default function App() {
             {/* Results */}
             <div style={{ overflowY: "auto", flex: 1 }}>
               {searching && (
-                <div style={{ textAlign: "center", color: "#444", padding: "32px 0", fontSize: 13 }}>
+                <div style={{ textAlign: "center", color: "#999", padding: "32px 0", fontSize: 13 }}>
                   <div style={{ fontSize: 28, marginBottom: 8 }}>🔍</div>
                   ドズル社の動画を検索中…
                 </div>
@@ -280,9 +280,9 @@ export default function App() {
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {searchResults.map((v, i) => (
                   <button key={i} onClick={() => selectVideo(v)}
-                    style={{ display: "flex", alignItems: "center", gap: 10, background: "#080812", border: "1px solid #1a1a30", borderRadius: 10, padding: "8px 10px", cursor: "pointer", textAlign: "left", transition: "all 0.12s" }}
-                    onMouseEnter={e => { e.currentTarget.style.background = "#111125"; e.currentTarget.style.borderColor = "#6366f145"; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = "#080812"; e.currentTarget.style.borderColor = "#1a1a30"; }}
+                    style={{ display: "flex", alignItems: "center", gap: 10, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10, padding: "8px 10px", cursor: "pointer", textAlign: "left", transition: "all 0.12s" }}
+                    onMouseEnter={e => { e.currentTarget.style.background = "#eff0ff"; e.currentTarget.style.borderColor = "#a5b4fc"; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = "#f9fafb"; e.currentTarget.style.borderColor = "#e5e7eb"; }}
                   >
                     <div style={{ position: "relative", flexShrink: 0 }}>
                       <img
@@ -295,7 +295,7 @@ export default function App() {
                     </div>
                     <div>
                       <div style={{ fontSize: 11, color: "#ccc", lineHeight: 1.45, fontWeight: 600 }}>{v.title}</div>
-                      <div style={{ fontSize: 9, color: "#444", marginTop: 3 }}>youtube.com/watch?v={v.videoId}</div>
+                      <div style={{ fontSize: 9, color: "#aaa", marginTop: 3 }}>youtube.com/watch?v={v.videoId}</div>
                     </div>
                   </button>
                 ))}
@@ -309,14 +309,14 @@ export default function App() {
       <div style={{ textAlign: "center", marginBottom: 26 }}>
         <div style={{ fontSize: 10, letterSpacing: 4, color: "#6366f1", fontWeight: 700, marginBottom: 8, textTransform: "uppercase" }}>DOZLE CORP. × YOU</div>
         <h1 style={{ margin: 0, fontSize: 27, fontWeight: 900, background: "linear-gradient(135deg,#818cf8,#a78bfa,#38bdf8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", letterSpacing: -0.5 }}>My Dozle-sha</h1>
-        <div style={{ fontSize: 11, color: "#333", marginTop: 4 }}>私を構成する6つのドズル社動画</div>
+        <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>私を構成する6つのドズル社動画</div>
       </div>
 
       {/* ── Name input ── */}
       <div style={{ maxWidth: 540, margin: "0 auto 20px" }}>
         <label style={{ fontSize: 10, color: "#444", fontWeight: 700, letterSpacing: 1, display: "block", marginBottom: 5 }}>制作者名（任意）</label>
         <input type="text" maxLength={40} placeholder="あなたの名前" value={author} onChange={e => setAuthor(e.target.value)}
-          style={{ width: "100%", boxSizing: "border-box", background: "#0c0c1a", border: "1px solid #1a1a30", borderRadius: 10, padding: "9px 12px", color: "#fff", fontSize: 13, outline: "none" }}
+          style={{ width: "100%", boxSizing: "border-box", background: "#fff", border: "1px solid #d1d5db", borderRadius: 10, padding: "9px 12px", color: "#111", fontSize: 13, outline: "none" }}
           onFocus={e => e.target.style.borderColor = "#6366f1"} onBlur={e => e.target.style.borderColor = "#1a1a30"}
         />
         <div style={{ textAlign: "right", fontSize: 9, color: "#2a2a3a", marginTop: 3 }}>{author.length}/40</div>
@@ -366,7 +366,7 @@ export default function App() {
                 )}
               </>
             ) : (
-              <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, color: "#252540" }}>
+              <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, color: "#c7c7dd" }}>
                 <span style={{ fontSize: 22 }}>＋</span>
                 <span style={{ fontSize: 10, fontWeight: 600 }}>選択</span>
               </div>
@@ -377,7 +377,7 @@ export default function App() {
 
       {/* ── Progress ── */}
       <div style={{ maxWidth: 540, margin: "0 auto 20px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#333", marginBottom: 5 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#555", marginBottom: 5 }}>
           <span>{filledCount} / 6 選択済み</span>
           <span>{Math.round(filledCount / 6 * 100)}%</span>
         </div>
@@ -398,11 +398,11 @@ export default function App() {
         {/* サブボタン行 */}
         <div style={{ display: "flex", gap: 10 }}>
           <button onClick={handleCopyText} disabled={filledCount === 0}
-            style={{ flex: 1, padding: "11px", background: "#0c0c1a", border: "1px solid #1a1a30", borderRadius: 12, color: filledCount === 0 ? "#252535" : "#666", fontSize: 12, fontWeight: 700, cursor: filledCount === 0 ? "not-allowed" : "pointer" }}>
+            style={{ flex: 1, padding: "11px", background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 12, color: filledCount === 0 ? "#ccc" : "#666", fontSize: 12, fontWeight: 700, cursor: filledCount === 0 ? "not-allowed" : "pointer" }}>
             📋 テキストコピー
           </button>
           <button onClick={handleDownload} disabled={filledCount === 0 || generating}
-            style={{ flex: 1, padding: "11px", background: "#0c0c1a", border: filledCount === 0 ? "1px solid #1a1a30" : "1px solid #6366f140", borderRadius: 12, color: filledCount === 0 ? "#252535" : "#a78bfa", fontSize: 12, fontWeight: 700, cursor: filledCount === 0 || generating ? "not-allowed" : "pointer" }}>
+            style={{ flex: 1, padding: "11px", background: "#f3f4f6", border: filledCount === 0 ? "1px solid #e5e7eb" : "1px solid #a5b4fc", borderRadius: 12, color: filledCount === 0 ? "#ccc" : "#6366f1", fontSize: 12, fontWeight: 700, cursor: filledCount === 0 || generating ? "not-allowed" : "pointer" }}>
             ⬇️ 画像だけDL
           </button>
         </div>
@@ -412,7 +412,7 @@ export default function App() {
         * { box-sizing: border-box; }
         input::placeholder { color: #22223a; }
         ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #1a1a30; border-radius: 2px; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
       `}</style>
     </div>
   );
