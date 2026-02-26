@@ -108,6 +108,7 @@ export default function App() {
   const [generating, setGenerating] = useState(false);
   const [toast, setToast] = useState("");
   const [thumbErrors, setThumbErrors] = useState({});
+
   const searchRef = useRef(null);
   // Store img element refs for canvas drawing
   const imgRefs = useRef({});
@@ -134,9 +135,10 @@ export default function App() {
         q: q,
         channelId: DOZLE_CHANNEL_ID,
         type: "video",
-        maxResults: 6,
+        maxResults: 20,
         order: "relevance",
         key: API_KEY,
+        publishedAfter: "2020-01-03T00:00:00Z",
       });
       const res = await fetch(`https://www.googleapis.com/youtube/v3/search?${params}`);
       const data = await res.json();
@@ -262,7 +264,6 @@ export default function App() {
                 {searching ? "検索中…" : "🔍 検索"}
               </button>
             </div>
-
             {/* Results */}
             <div style={{ overflowY: "auto", flex: 1 }}>
               {searching && (
