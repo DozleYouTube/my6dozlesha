@@ -199,43 +199,23 @@ export default function App() {
         if (imgRefs.current[i] && cells[i]) imgEls[i] = imgRefs.current[i];
       }
       const canvas = await generateShareCanvas(cells, author, imgEls);
-      const tweetText = `私を構成する6つのドズル社動画🎮\n#My3dozlesha #ドズル社\nhttps://youtube.com/@dozle`;
 
-      // モバイル：Web Share APIで画像ごとシェア
-      if (navigator.share && navigator.canShare) {
-        canvas.toBlob(async (blob) => {
-          const file = new File([blob], "my-dozlesha.png", { type: "image/png" });
-          if (navigator.canShare({ files: [file] })) {
-            try {
-              await navigator.share({ text: tweetText, files: [file] });
-              setGenerating(false);
-              return;
-            } catch (e) { /* fallback below */ }
-          }
-          // Web Share API非対応 → fallback
-          fallbackTwitter(canvas, tweetText);
-          setGenerating(false);
-        }, "image/png");
-      } else {
-        // PC：画像DL + Twitterを開く
-        fallbackTwitter(canvas, tweetText);
-        setGenerating(false);
-      }
-    } catch (e) { console.error(e); showToast("シェアに失敗しました"); setGenerating(false); }
-  };
+      // 画像をDL
+      const link = document.createElement("a");
+      link.download = "my-dozlesha.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
 
-  const fallbackTwitter = (canvas, tweetText) => {
-    // 画像をDL
-    const link = document.createElement("a");
-    link.download = "my-dozlesha.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-    // 少し待ってからTwitterを開く
-    setTimeout(() => {
-      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
-      window.open(url, "_blank");
-      showToast("画像をDLしました！Twitterに添付してね📎");
-    }, 800);
+      // 少し待ってからTwitter投稿画面を開く（ハッシュタグ・テキスト入り）
+      setTimeout(() => {
+        const text = `私を構成する6つのドズル社動画🎮`;
+        const hashtags = `My3dozlesha,ドズル社`;
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&hashtags=${encodeURIComponent(hashtags)}&url=${encodeURIComponent("https://youtube.com/@dozle")}`;
+        window.open(url, "_blank");
+        showToast("①画像をDL済み　②Xで画像を添付してポスト！");
+      }, 600);
+    } catch (e) { console.error(e); showToast("シェアに失敗しました"); }
+    setGenerating(false);
   };
 
   const filledCount = cells.filter(Boolean).length;
