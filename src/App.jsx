@@ -123,31 +123,37 @@ export default function App() {
   const doSearch = async (q) => {
     if (!q.trim()) return;
     setSearching(true); setSearchResults([]);
+
+    const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
+    if (!API_KEY) { showToast("YouTube APIキーが設定されていません"); setSearching(false); return; }
+
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1200,
-          tools: [{ type: "web_search_20250305", name: "web_search" }],
-          system: `You find ドズル社 YouTube videos. Search for the query and extract real YouTube video IDs (11 chars) from watch?v= URLs.
-ONLY return a raw JSON array. No markdown. No explanation. No code blocks:
-[{"videoId":"abc1234XYZ1","title":"動画タイトル"}, ...]
-Return 4-6 results. Only ドズル社 channel videos. videoId must be exactly 11 alphanumeric characters.`,
-          messages: [{ role: "user", content: `ドズル社 YouTube動画を検索: 「${q}」\nwatch?v=XXXXXXXXXXX 形式のURLからIDを抽出してJSONで返してください` }]
-        })
+      const DOZLE_CHANNEL_ID = "UCj4PjeVMnNTHIR5EeoNKPAw";
+      const params = new URLSearchParams({
+        part: "snippet",
+        q: q,
+        channelId: DOZLE_CHANNEL_ID,
+        type: "video",
+        maxResults: 6,
+        order: "relevance",
+        key: API_KEY,
       });
+      const res = await fetch(`https://www.googleapis.com/youtube/v3/search?${params}`);
       const data = await res.json();
-      const txt = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("");
-      // Extract JSON array even if there's surrounding text
-      const m = txt.match(/\[\s*\{[\s\S]*?\}\s*\]/);
-      if (m) {
-        const parsed = JSON.parse(m[0]);
-        const valid = parsed.filter(v => v.videoId && /^[a-zA-Z0-9_-]{11}$/.test(v.videoId) && v.title);
-        if (valid.length) { setSearchResults(valid); }
-        else { showToast("動画が見つかりませんでした"); }
-      } else { showToast("動画が見つかりませんでした"); }
+
+      if (data.error) {
+        console.error(data.error);
+        showToast("検索に失敗しました");
+      } else if (!data.items?.length) {
+        showToast("動画が見つかりませんでした");
+      } else {
+        const results = data.items.map(item => ({
+          videoId: item.id.videoId,
+          title: item.snippet.title,
+          thumbnail: item.snippet.thumbnails?.medium?.url || `https://i.ytimg.com/vi/${item.id.videoId}/mqdefault.jpg`,
+        }));
+        setSearchResults(results);
+      }
     } catch (e) { console.error(e); showToast("検索に失敗しました"); }
     setSearching(false);
   };
@@ -252,7 +258,7 @@ Return 4-6 results. Only ドズル社 channel videos. videoId must be exactly 11
                   >
                     <div style={{ position: "relative", flexShrink: 0 }}>
                       <img
-                        src={thumbUrl(v.videoId)}
+                        src={v.thumbnail || thumbUrl(v.videoId)}
                         alt={v.title}
                         style={{ width: 90, height: 56, objectFit: "cover", borderRadius: 6, display: "block", background: "#111" }}
                         onError={e => { e.target.src = `https://img.youtube.com/vi/${v.videoId}/0.jpg`; }}
