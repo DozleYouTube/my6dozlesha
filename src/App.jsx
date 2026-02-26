@@ -191,6 +191,53 @@ export default function App() {
     showToast("コピーしました！");
   };
 
+  const handleTwitterShare = async () => {
+    setGenerating(true);
+    try {
+      const imgEls = {};
+      for (let i = 0; i < CELL_COUNT; i++) {
+        if (imgRefs.current[i] && cells[i]) imgEls[i] = imgRefs.current[i];
+      }
+      const canvas = await generateShareCanvas(cells, author, imgEls);
+      const tweetText = `私を構成する6つのドズル社動画🎮\n#My3dozlesha #ドズル社\nhttps://youtube.com/@dozle`;
+
+      // モバイル：Web Share APIで画像ごとシェア
+      if (navigator.share && navigator.canShare) {
+        canvas.toBlob(async (blob) => {
+          const file = new File([blob], "my-dozlesha.png", { type: "image/png" });
+          if (navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({ text: tweetText, files: [file] });
+              setGenerating(false);
+              return;
+            } catch (e) { /* fallback below */ }
+          }
+          // Web Share API非対応 → fallback
+          fallbackTwitter(canvas, tweetText);
+          setGenerating(false);
+        }, "image/png");
+      } else {
+        // PC：画像DL + Twitterを開く
+        fallbackTwitter(canvas, tweetText);
+        setGenerating(false);
+      }
+    } catch (e) { console.error(e); showToast("シェアに失敗しました"); setGenerating(false); }
+  };
+
+  const fallbackTwitter = (canvas, tweetText) => {
+    // 画像をDL
+    const link = document.createElement("a");
+    link.download = "my-dozlesha.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+    // 少し待ってからTwitterを開く
+    setTimeout(() => {
+      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+      window.open(url, "_blank");
+      showToast("画像をDLしました！Twitterに添付してね📎");
+    }, 800);
+  };
+
   const filledCount = cells.filter(Boolean).length;
   const thumbUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
 
@@ -359,15 +406,25 @@ export default function App() {
       </div>
 
       {/* ── Buttons ── */}
-      <div style={{ maxWidth: 540, margin: "0 auto", display: "flex", gap: 10 }}>
-        <button onClick={handleCopyText} disabled={filledCount === 0}
-          style={{ flex: 1, padding: "13px", background: "#0c0c1a", border: "1px solid #1a1a30", borderRadius: 12, color: filledCount === 0 ? "#252535" : "#777", fontSize: 12, fontWeight: 700, cursor: filledCount === 0 ? "not-allowed" : "pointer" }}>
-          📋 テキストコピー
+      <div style={{ maxWidth: 540, margin: "0 auto", display: "flex", flexDirection: "column", gap: 10 }}>
+        {/* Twitterシェアボタン（メイン） */}
+        <button onClick={handleTwitterShare} disabled={filledCount === 0 || generating}
+          style={{ width: "100%", padding: "15px", background: filledCount === 0 ? "#0c0c1a" : "linear-gradient(135deg,#1d9bf0,#0d7abf)", border: filledCount === 0 ? "1px solid #1a1a30" : "none", borderRadius: 12, color: filledCount === 0 ? "#252535" : "#fff", fontSize: 15, fontWeight: 800, cursor: filledCount === 0 || generating ? "not-allowed" : "pointer", boxShadow: filledCount > 0 ? "0 4px 22px rgba(29,155,240,0.35)" : "none", transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          {generating ? "⏳ 生成中..." : (
+            <>{filledCount === 0 ? "🐦 Xでシェア" : "🐦 Xでシェアする"} {filledCount > 0 && <span style={{ fontSize: 11, opacity: 0.8, fontWeight: 400 }}>({filledCount}/6)</span>}</>
+          )}
         </button>
-        <button onClick={handleDownload} disabled={filledCount === 0 || generating}
-          style={{ flex: 2, padding: "13px", background: filledCount === 0 ? "#0c0c1a" : "linear-gradient(135deg,#6366f1,#a78bfa)", border: filledCount === 0 ? "1px solid #1a1a30" : "none", borderRadius: 12, color: filledCount === 0 ? "#252535" : "#fff", fontSize: 14, fontWeight: 800, cursor: filledCount === 0 || generating ? "not-allowed" : "pointer", boxShadow: filledCount > 0 ? "0 4px 22px rgba(99,102,241,0.32)" : "none", transition: "all 0.2s" }}>
-          {generating ? "⏳ 生成中..." : `🎉 シェア画像をDL (${filledCount}/6)`}
-        </button>
+        {/* サブボタン行 */}
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={handleCopyText} disabled={filledCount === 0}
+            style={{ flex: 1, padding: "11px", background: "#0c0c1a", border: "1px solid #1a1a30", borderRadius: 12, color: filledCount === 0 ? "#252535" : "#666", fontSize: 12, fontWeight: 700, cursor: filledCount === 0 ? "not-allowed" : "pointer" }}>
+            📋 テキストコピー
+          </button>
+          <button onClick={handleDownload} disabled={filledCount === 0 || generating}
+            style={{ flex: 1, padding: "11px", background: "#0c0c1a", border: filledCount === 0 ? "1px solid #1a1a30" : "1px solid #6366f140", borderRadius: 12, color: filledCount === 0 ? "#252535" : "#a78bfa", fontSize: 12, fontWeight: 700, cursor: filledCount === 0 || generating ? "not-allowed" : "pointer" }}>
+            ⬇️ 画像だけDL
+          </button>
+        </div>
       </div>
 
       <style>{`
