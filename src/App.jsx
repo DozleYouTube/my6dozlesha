@@ -235,7 +235,7 @@ export default function App() {
 
       {/* ── Search Modal ── */}
       {activeCell !== null && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }} onClick={closeModal}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }} onClick={closeModal}>
           <div style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 20, padding: "22px 20px", width: "100%", maxWidth: 460, maxHeight: "82vh", display: "flex", flexDirection: "column", gap: 14, boxShadow: "0 24px 64px rgba(0,0,0,0.75)" }} onClick={e => e.stopPropagation()}>
 
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -254,12 +254,12 @@ export default function App() {
                 onKeyDown={e => e.key === "Enter" && doSearch(searchQuery)}
                 style={{ flex: 1, background: "#f9fafb", border: "1px solid #d1d5db", borderRadius: 10, padding: "9px 12px", color: "#111", fontSize: 12, outline: "none" }}
                 onFocus={e => e.target.style.borderColor = "#6366f1"}
-                onBlur={e => e.target.style.borderColor = "#1e1e38"}
+                onBlur={e => e.target.style.borderColor = "#d1d5db"}
               />
               <button
                 onClick={() => doSearch(searchQuery)}
                 disabled={searching || !searchQuery.trim()}
-                style={{ background: searching || !searchQuery.trim() ? "#12121e" : "linear-gradient(135deg,#6366f1,#a78bfa)", border: "none", borderRadius: 10, padding: "9px 14px", color: searching || !searchQuery.trim() ? "#333" : "#fff", fontWeight: 800, fontSize: 12, cursor: searching || !searchQuery.trim() ? "not-allowed" : "pointer", whiteSpace: "nowrap", transition: "all 0.15s" }}
+                style={{ background: searching || !searchQuery.trim() ? "#e5e7eb" : "linear-gradient(135deg,#6366f1,#a78bfa)", border: "none", borderRadius: 10, padding: "9px 14px", color: searching || !searchQuery.trim() ? "#aaa" : "#fff", fontWeight: 800, fontSize: 12, cursor: searching || !searchQuery.trim() ? "not-allowed" : "pointer", whiteSpace: "nowrap", transition: "all 0.15s" }}
               >
                 {searching ? "検索中…" : "🔍 検索"}
               </button>
@@ -317,18 +317,18 @@ export default function App() {
         <label style={{ fontSize: 10, color: "#444", fontWeight: 700, letterSpacing: 1, display: "block", marginBottom: 5 }}>制作者名（任意）</label>
         <input type="text" maxLength={40} placeholder="あなたの名前" value={author} onChange={e => setAuthor(e.target.value)}
           style={{ width: "100%", boxSizing: "border-box", background: "#fff", border: "1px solid #d1d5db", borderRadius: 10, padding: "9px 12px", color: "#111", fontSize: 13, outline: "none" }}
-          onFocus={e => e.target.style.borderColor = "#6366f1"} onBlur={e => e.target.style.borderColor = "#1a1a30"}
+          onFocus={e => e.target.style.borderColor = "#6366f1"} onBlur={e => e.target.style.borderColor = "#d1d5db"}
         />
         <div style={{ textAlign: "right", fontSize: 9, color: "#2a2a3a", marginTop: 3 }}>{author.length}/40</div>
       </div>
 
       {/* ── 3×2 Grid ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, maxWidth: 540, margin: "0 auto 20px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8, maxWidth: 540, margin: "0 auto 20px" }}>
         {cells.map((cell, i) => (
           <div key={i} onClick={() => openModal(i)}
-            style={{ aspectRatio: "16/10", background: cell ? "transparent" : "#0c0c1a", border: `1px solid ${cell ? "rgba(99,102,241,0.3)" : "#1a1a30"}`, borderRadius: 12, position: "relative", cursor: "pointer", overflow: "hidden", transition: "border-color 0.18s, box-shadow 0.18s" }}
+            style={{ aspectRatio: "16/10", background: cell ? "transparent" : "#f3f4ff", border: `1px solid ${cell ? "rgba(99,102,241,0.3)" : "#dde0f5"}`, borderRadius: 12, position: "relative", cursor: "pointer", overflow: "hidden", transition: "border-color 0.18s, box-shadow 0.18s" }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = "#6366f150"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(99,102,241,0.14)"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = cell ? "rgba(99,102,241,0.3)" : "#1a1a30"; e.currentTarget.style.boxShadow = "none"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = cell ? "rgba(99,102,241,0.3)" : "#dde0f5"; e.currentTarget.style.boxShadow = "none"; }}
           >
             {/* Number badge */}
             <div style={{ position: "absolute", top: 5, left: 7, zIndex: 3, fontSize: 9, fontWeight: 800, color: cell ? "rgba(255,255,255,0.7)" : "#2a2a40", textShadow: cell ? "0 1px 3px rgba(0,0,0,0.8)" : "none" }}>{i + 1}</div>
@@ -390,7 +390,7 @@ export default function App() {
       <div style={{ maxWidth: 540, margin: "0 auto", display: "flex", flexDirection: "column", gap: 10 }}>
         {/* Twitterシェアボタン（メイン） */}
         <button onClick={handleTwitterShare} disabled={filledCount === 0 || generating}
-          style={{ width: "100%", padding: "15px", background: filledCount === 0 ? "#0c0c1a" : "linear-gradient(135deg,#1d9bf0,#0d7abf)", border: filledCount === 0 ? "1px solid #1a1a30" : "none", borderRadius: 12, color: filledCount === 0 ? "#252535" : "#fff", fontSize: 15, fontWeight: 800, cursor: filledCount === 0 || generating ? "not-allowed" : "pointer", boxShadow: filledCount > 0 ? "0 4px 22px rgba(29,155,240,0.35)" : "none", transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          style={{ width: "100%", padding: "15px", background: filledCount === 0 ? "#e5e7eb" : "linear-gradient(135deg,#38bdf8,#0ea5e9)", border: filledCount === 0 ? "1px solid #e5e7eb" : "none", borderRadius: 12, color: filledCount === 0 ? "#aaa" : "#fff", fontSize: 15, fontWeight: 800, cursor: filledCount === 0 || generating ? "not-allowed" : "pointer", boxShadow: filledCount > 0 ? "0 4px 22px rgba(56,189,248,0.4)" : "none", transition: "all 0.2s", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
           {generating ? "⏳ 生成中..." : (
             <>{filledCount === 0 ? "🐦 Xでシェア" : "🐦 Xでシェアする"} {filledCount > 0 && <span style={{ fontSize: 11, opacity: 0.8, fontWeight: 400 }}>({filledCount}/6)</span>}</>
           )}
