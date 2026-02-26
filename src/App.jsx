@@ -19,7 +19,7 @@ function imgElementToImageData(imgEl) {
 
 async function generateShareCanvas(cells, authorName, imgEls) {
   const CELL_W = 220, CELL_H = 140, GAP = 8, PAD = 20;
-  const HEADER_H = 90, FOOTER_H = 44;
+  const HEADER_H = 90, FOOTER_H = 64;
   const W = COLS * CELL_W + (COLS - 1) * GAP + PAD * 2;
   const H = HEADER_H + ROWS * CELL_H + (ROWS - 1) * GAP + PAD * 2 + FOOTER_H;
 
@@ -89,10 +89,23 @@ async function generateShareCanvas(cells, authorName, imgEls) {
     }
   }
 
-  // Footer
+  // Footer - hashtag text
   ctx.textAlign = "center"; ctx.fillStyle = "rgba(99,102,241,0.7)";
   ctx.font = "9px Arial";
-  ctx.fillText("#My3dozlesha  #ドズル社  youtube.com/@dozle", W/2, H - 14);
+  ctx.fillText("#My3dozlesha  #ドズル社", W/2, H - 46);
+
+  // Footer - Dozle logo
+  await new Promise((resolve) => {
+    const logo = new Image();
+    logo.onload = () => {
+      const logoH = 32;
+      const logoW = logo.naturalWidth * (logoH / logo.naturalHeight);
+      ctx.drawImage(logo, (W - logoW) / 2, H - logoH - 8, logoW, logoH);
+      resolve();
+    };
+    logo.onerror = () => resolve();
+    logo.src = "/dozle-logo.png";
+  });
 
   return canvas;
 }
