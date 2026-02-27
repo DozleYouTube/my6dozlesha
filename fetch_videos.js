@@ -2,7 +2,7 @@ const API_KEY = process.argv[2];
 if (!API_KEY) { console.error("使い方: node fetch_videos.js YOUR_API_KEY"); process.exit(1); }
 
 const CHANNEL_ID = "UCj4PjeVMnNTHIR5EeoNKPAw";
-const PUBLISHED_AFTER = new Date("2021-01-01T00:00:00Z");
+const PUBLISHED_AFTER = new Date("2020-02-01T00:00:00Z");
 
 async function getUploadsPlaylistId() {
   const params = new URLSearchParams({ part: "contentDetails", id: CHANNEL_ID, key: API_KEY });
@@ -10,6 +10,24 @@ async function getUploadsPlaylistId() {
   const data = await res.json();
   if (data.error) { console.error("APIエラー:", data.error.message); process.exit(1); }
   return data.items[0].contentDetails.relatedPlaylists.uploads;
+}
+
+// 50件ずつ公開設定チェック
+async function filterPublicVideos(videos) {
+  const publicVideos = [];
+  for (let i = 0; i < videos.length; i += 50) {
+    const batch = videos.slice(i, i + 50);
+    const ids = batch.map(v => v.videoId).join(",");
+    const params = new URLSearchParams({ part: "status", id: ids, key: API_KEY });
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?${params}`);
+    const data = await res.json();
+    if (data.error) { console.error("公開チェックエラー:", data.error.message); return videos; }
+    const publicIds = new Set(data.items.filter(v => v.status.privacyStatus === "public").map(v => v.id));
+    publicVideos.push(...batch.filter(v => publicIds.has(v.videoId)));
+    console.log(`公開チェック ${i + batch.length}/${videos.length}件...`);
+    await new Promise(r => setTimeout(r, 200));
+  }
+  return publicVideos;
 }
 
 async function save(videos) {
@@ -33,15 +51,13 @@ async function fetchAllVideos() {
         part: "snippet", playlistId, maxResults: 50, key: API_KEY,
         ...(pageToken ? { pageToken } : {})
       });
-
       const res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?${params}`);
       const data = await res.json();
 
       if (data.error) {
         console.error(`ページ${page}でAPIエラー:`, data.error.message);
         console.log("途中まで保存します...");
-        await save(allVideos);
-        process.exit(0);
+        break;
       }
 
       const videos = data.items
@@ -49,6 +65,7 @@ async function fetchAllVideos() {
         .map(item => ({
           videoId: item.snippet.resourceId.videoId,
           title: item.snippet.title,
+          description: (item.snippet.description || "").slice(0, 300),
           thumbnail: item.snippet.thumbnails?.medium?.url || `https://i.ytimg.com/vi/${item.snippet.resourceId.videoId}/mqdefault.jpg`,
           publishedAt: item.snippet.publishedAt,
         }));
@@ -61,11 +78,14 @@ async function fetchAllVideos() {
       if (pageToken) await new Promise(r => setTimeout(r, 200));
     } while (pageToken);
 
-    await save(allVideos);
+    console.log(`\n公開設定をチェック中 (${allVideos.length}件)...`);
+    const publicVideos = await filterPublicVideos(allVideos);
+    console.log(`公開動画: ${publicVideos.length}件 / 全${allVideos.length}件`);
+
+    await save(publicVideos);
     console.log("完了！videos.json を public/ フォルダに置いてGitHubにpush");
   } catch (e) {
     console.error("エラー:", e.message);
-    console.log("途中まで保存します...");
     await save(allVideos);
   }
 }
