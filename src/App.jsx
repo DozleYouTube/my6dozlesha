@@ -78,8 +78,26 @@ async function generateShareCanvas(cells, authorName, imgEls) {
         ctx.save();
         ctx.beginPath(); ctx.roundRect(x, y, CELL_W, CELL_H, 7); ctx.clip();
         ctx.fillStyle = "#fff"; ctx.font = "bold 9px Arial"; ctx.textAlign = "center";
-        const t = cells[i].title.length > 30 ? cells[i].title.slice(0,28)+"…" : cells[i].title;
-        ctx.fillText(t, x + CELL_W/2, y + CELL_H - 9);
+        // 2行に分けて描画
+        const maxW = CELL_W - 12;
+        const words = cells[i].title;
+        let line1 = "", line2 = "";
+        let idx = 0;
+        while (idx < words.length) {
+          const test = line1 + words[idx];
+          if (ctx.measureText(test).width > maxW && line1 !== "") break;
+          line1 += words[idx]; idx++;
+        }
+        if (idx < words.length) {
+          const rest = words.slice(idx);
+          line2 = rest.length > 18 ? rest.slice(0, 17) + "…" : rest;
+        }
+        if (line2) {
+          ctx.fillText(line1, x + CELL_W/2, y + CELL_H - 19);
+          ctx.fillText(line2, x + CELL_W/2, y + CELL_H - 8);
+        } else {
+          ctx.fillText(line1, x + CELL_W/2, y + CELL_H - 9);
+        }
         ctx.restore();
       } catch(e) {
         // fallback color
@@ -94,18 +112,11 @@ async function generateShareCanvas(cells, authorName, imgEls) {
   ctx.font = "9px Arial";
   ctx.fillText("#私を構成する6つのドズル社動画", W/2, H - 46);
 
-  // Footer - Dozle logo
-  await new Promise((resolve) => {
-    const logo = new Image();
-    logo.onload = () => {
-      const logoH = 32;
-      const logoW = logo.naturalWidth * (logoH / logo.naturalHeight);
-      ctx.drawImage(logo, (W - logoW) / 2, H - logoH - 8, logoW, logoH);
-      resolve();
-    };
-    logo.onerror = () => resolve();
-    logo.src = "/dozle-logo.png";
-  });
+  // Footer - copyright
+  ctx.font = "bold 11px Arial";
+  ctx.fillStyle = "rgba(99,102,241,0.6)";
+  ctx.textAlign = "center";
+  ctx.fillText("©DOZLE Corp.", W/2, H - 10);
 
   return canvas;
 }
@@ -151,7 +162,7 @@ export default function App() {
         maxResults: 20,
         order: "relevance",
         key: API_KEY,
-        publishedAfter: "2020-01-03T00:00:00Z",
+        publishedAfter: "2021-01-01T00:00:00Z",
       });
       const res = await fetch(`https://www.googleapis.com/youtube/v3/search?${params}`);
       const data = await res.json();
@@ -421,7 +432,7 @@ export default function App() {
         </div>
       </div>
 
-      <div style={{ textAlign: "center", marginTop: 24, fontSize: 11, color: "#aaa" }}>©DOZLE Corp.</div>
+      <div style={{ textAlign: "center", marginTop: 24, fontSize: 11, color: "#aaa" }}>©Dozle Corp.</div>
 
       <style>{`
         * { box-sizing: border-box; }
