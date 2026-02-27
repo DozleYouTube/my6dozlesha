@@ -36,8 +36,6 @@ async function generateShareCanvas(cells, authorName, imgEls) {
 
   // Header
   ctx.textAlign = "center";
-  ctx.font = "bold 10px Arial"; ctx.fillStyle = "#C80000";
-  ctx.fillText("私を構成する6つのドズル社動画", W/2, PAD + 16);
   ctx.font = "bold 18px Arial"; ctx.fillStyle = "#111";
   ctx.fillText(authorName ? `${authorName} を構成する6つのドズル社動画` : "私を構成する6つのドズル社動画", W/2, PAD + 44);
   ctx.strokeStyle = "rgba(200,0,0,0.35)"; ctx.lineWidth = 1;
