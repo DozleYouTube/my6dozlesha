@@ -39,7 +39,7 @@ async function generateShareCanvas(cells, authorName, imgEls) {
   // Header
   ctx.textAlign = "center";
   ctx.font = "bold 10px Arial"; ctx.fillStyle = "#6366f1";
-  ctx.fillText("MY  DOZLE-SHA", W/2, PAD + 16);
+  ctx.fillText("私を構成する6つのドズル社動画", W/2, PAD + 16);
   ctx.font = "bold 18px Arial"; ctx.fillStyle = "#111";
   ctx.fillText(authorName ? `${authorName} を構成する6つのドズル社動画` : "私を構成する6つのドズル社動画", W/2, PAD + 44);
   ctx.strokeStyle = "rgba(99,102,241,0.35)"; ctx.lineWidth = 1;
@@ -92,7 +92,7 @@ async function generateShareCanvas(cells, authorName, imgEls) {
   // Footer - hashtag text
   ctx.textAlign = "center"; ctx.fillStyle = "rgba(99,102,241,0.7)";
   ctx.font = "9px Arial";
-  ctx.fillText("#My3dozlesha  #ドズル社", W/2, H - 46);
+  ctx.fillText("#私を構成する6つのドズル社動画", W/2, H - 46);
 
   // Footer - Dozle logo
   await new Promise((resolve) => {
@@ -202,7 +202,7 @@ export default function App() {
 
   const handleCopyText = () => {
     const lines = cells.map((c,i) => c ? `${i+1}️⃣ ${c.title}` : `${i+1}️⃣ （未選択）`).join("\n");
-    navigator.clipboard?.writeText(`私を構成する6つのドズル社動画🎮\n${lines}\n\n#My3dozlesha #ドズル社\nhttps://youtube.com/@dozle`);
+    navigator.clipboard?.writeText(`私を構成する6つのドズル社動画🎮\n${lines}\n\n#私を構成する6つのドズル社動画\nhttps://my6dozlesha.vercel.app/`);
     showToast("コピーしました！");
   };
 
@@ -224,8 +224,8 @@ export default function App() {
       // 少し待ってからTwitter投稿画面を開く（ハッシュタグ・テキスト入り）
       setTimeout(() => {
         const text = `私を構成する6つのドズル社動画🎮`;
-        const hashtags = `My3dozlesha,ドズル社`;
-        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&hashtags=${encodeURIComponent(hashtags)}&url=${encodeURIComponent("https://youtube.com/@dozle")}`;
+        const hashtags = `私を構成する6つのドズル社動画`;
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&hashtags=${encodeURIComponent(hashtags)}&url=${encodeURIComponent("https://my6dozlesha.vercel.app/")}`;
         window.open(url, "_blank");
         showToast("①画像をDL済み　②Xで画像を添付してポスト！");
       }, 600);
@@ -320,9 +320,9 @@ export default function App() {
 
       {/* ── Header ── */}
       <div style={{ textAlign: "center", marginBottom: 26 }}>
-        <div style={{ fontSize: 10, letterSpacing: 4, color: "#6366f1", fontWeight: 700, marginBottom: 8, textTransform: "uppercase" }}>DOZLE CORP. × YOU</div>
-        <h1 style={{ margin: 0, fontSize: 27, fontWeight: 900, background: "linear-gradient(135deg,#818cf8,#a78bfa,#38bdf8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", letterSpacing: -0.5 }}>My Dozle-sha</h1>
-        <div style={{ fontSize: 11, color: "#555", marginTop: 4 }}>私を構成する6つのドズル社動画</div>
+        <div style={{ fontSize: 10, letterSpacing: 4, color: "#6366f1", fontWeight: 700, marginBottom: 8, textTransform: "uppercase" }}>ドズル社 × あなた</div>
+        <h1 style={{ margin: 0, fontSize: 27, fontWeight: 900, background: "linear-gradient(135deg,#818cf8,#a78bfa,#38bdf8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", letterSpacing: -0.5 }}>私を構成する6つのドズル社動画</h1>
+        
       </div>
 
       {/* ── Name input ── */}
@@ -420,6 +420,8 @@ export default function App() {
           </button>
         </div>
       </div>
+
+      <div style={{ textAlign: "center", marginTop: 24, fontSize: 11, color: "#aaa" }}>©DOZLE Corp.</div>
 
       <style>{`
         * { box-sizing: border-box; }
