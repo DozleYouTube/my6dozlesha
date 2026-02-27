@@ -119,7 +119,6 @@ async function generateShareCanvas(cells, authorName, imgEls) {
 
 // ── 検索キャッシュ（APIユニット節約） ──────────────────────────
 const searchCache = {};
-const CACHE_TTL = 1000 * 60 * 30; // 30分
 
 // ── メインコンポーネント ────────────────────────────────────────
 export default function App() {
@@ -149,48 +148,29 @@ export default function App() {
     if (!q.trim()) return;
     setSearching(true); setSearchResults([]);
 
-    const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
-    if (!API_KEY) { showToast("YouTube APIキーが設定されていません"); setSearching(false); return; }
-
-    // キャッシュチェック
-    const cacheKey = q.trim().toLowerCase();
-    const cached = searchCache[cacheKey];
-    if (cached && Date.now() - cached.time < CACHE_TTL) {
-      setSearchResults(cached.results);
-      setSearching(false);
-      return;
-    }
-
     try {
-      const DOZLE_CHANNEL_ID = "UCj4PjeVMnNTHIR5EeoNKPAw";
-      const params = new URLSearchParams({
-        part: "snippet",
-        q: q,
-        channelId: DOZLE_CHANNEL_ID,
-        type: "video",
-        maxResults: 20,
-        order: "relevance",
-        key: API_KEY,
-        publishedAfter: "2021-01-01T00:00:00Z",
-      });
-      const res = await fetch(`https://www.googleapis.com/youtube/v3/search?${params}`);
-      const data = await res.json();
+      // 動画リストを取得（キャッシュ済みならそのまま使う）
+      if (!searchCache._videos) {
+        const res = await fetch("/videos.json");
+        if (!res.ok) throw new Error("videos.json が見つかりません");
+        const data = await res.json();
+        searchCache._videos = data.videos;
+      }
 
-      if (data.error) {
-        console.error(data.error);
-        showToast("検索に失敗しました");
-      } else if (!data.items?.length) {
+      const words = q.trim().toLowerCase().split(/\s+/);
+      const results = searchCache._videos
+        .filter(v => words.every(w => v.title.toLowerCase().includes(w)))
+        .slice(0, 20);
+
+      if (!results.length) {
         showToast("動画が見つかりませんでした");
       } else {
-        const results = data.items.map(item => ({
-          videoId: item.id.videoId,
-          title: item.snippet.title,
-          thumbnail: item.snippet.thumbnails?.medium?.url || `https://i.ytimg.com/vi/${item.id.videoId}/mqdefault.jpg`,
-        }));
-        searchCache[cacheKey] = { results, time: Date.now() };
         setSearchResults(results);
       }
-    } catch (e) { console.error(e); showToast("検索に失敗しました"); }
+    } catch (e) {
+      console.error(e);
+      showToast("動画リストの読み込みに失敗しました。videos.jsonを確認してください");
+    }
     setSearching(false);
   };
 
