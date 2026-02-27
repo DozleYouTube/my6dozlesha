@@ -32,17 +32,15 @@ async function generateShareCanvas(cells, authorName, imgEls) {
   const bgGrad = ctx.createLinearGradient(0, 0, W, H);
   bgGrad.addColorStop(0, "#ffffff"); bgGrad.addColorStop(1, "#f3f4f6");
   ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, W, H);
-  ctx.strokeStyle = "rgba(99,102,241,0.08)"; ctx.lineWidth = 0.5;
-  for (let x = 0; x < W; x += 36) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-  for (let y = 0; y < H; y += 36) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
 
   // Header
   ctx.textAlign = "center";
-  ctx.font = "bold 10px Arial"; ctx.fillStyle = "#6366f1";
+  ctx.font = "bold 10px Arial"; ctx.fillStyle = "#C80000";
   ctx.fillText("私を構成する6つのドズル社動画", W/2, PAD + 16);
   ctx.font = "bold 18px Arial"; ctx.fillStyle = "#111";
   ctx.fillText(authorName ? `${authorName} を構成する6つのドズル社動画` : "私を構成する6つのドズル社動画", W/2, PAD + 44);
-  ctx.strokeStyle = "rgba(99,102,241,0.35)"; ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(200,0,0,0.35)"; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(PAD, PAD+56); ctx.lineTo(W-PAD, PAD+56); ctx.stroke();
 
   // Cells
@@ -54,11 +52,11 @@ async function generateShareCanvas(cells, authorName, imgEls) {
     // Cell bg
     ctx.fillStyle = "rgba(0,0,0,0.04)";
     ctx.beginPath(); ctx.roundRect(x, y, CELL_W, CELL_H, 7); ctx.fill();
-    ctx.strokeStyle = "rgba(99,102,241,0.22)"; ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(200,0,0,0.22)"; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.roundRect(x, y, CELL_W, CELL_H, 7); ctx.stroke();
 
     // Number
-    ctx.fillStyle = "rgba(99,102,241,0.5)"; ctx.font = "bold 9px Arial";
+    ctx.fillStyle = "rgba(200,0,0,0.5)"; ctx.font = "bold 9px Arial";
     ctx.textAlign = "left"; ctx.fillText(`${i+1}`, x+6, y+14);
 
     if (cells[i] && imgEls[i]) {
@@ -101,20 +99,20 @@ async function generateShareCanvas(cells, authorName, imgEls) {
         ctx.restore();
       } catch(e) {
         // fallback color
-        ctx.fillStyle = "rgba(99,102,241,0.08)";
+        ctx.fillStyle = "rgba(200,0,0,0.08)";
         ctx.beginPath(); ctx.roundRect(x, y, CELL_W, CELL_H, 7); ctx.fill();
       }
     }
   }
 
   // Footer - hashtag text
-  ctx.textAlign = "center"; ctx.fillStyle = "rgba(99,102,241,0.7)";
+  ctx.textAlign = "center"; ctx.fillStyle = "rgba(200,0,0,0.7)";
   ctx.font = "9px Arial";
   ctx.fillText("#私を構成する6つのドズル社動画", W/2, H - 46);
 
   // Footer - copyright
   ctx.font = "bold 11px Arial";
-  ctx.fillStyle = "rgba(99,102,241,0.6)";
+  ctx.fillStyle = "rgba(200,0,0,0.6)";
   ctx.textAlign = "center";
   ctx.fillText("©DOZLE Corp.", W/2, H - 10);
 
@@ -234,9 +232,8 @@ export default function App() {
 
       // 少し待ってからTwitter投稿画面を開く（ハッシュタグ・テキスト入り）
       setTimeout(() => {
-        const text = `私を構成する6つのドズル社動画🎮`;
-        const hashtags = `私を構成する6つのドズル社動画`;
-        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&hashtags=${encodeURIComponent(hashtags)}&url=${encodeURIComponent("https://my6dozlesha.vercel.app/")}`;
+        const tweetFull = `私を構成する6つのドズル社動画🎥 #私を構成する6つのドズル社動画 https://my6dozlesha.vercel.app/`;
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetFull)}`;
         window.open(url, "_blank");
         showToast("①画像をDL済み　②Xで画像を添付してポスト！");
       }, 600);
@@ -248,11 +245,11 @@ export default function App() {
   const thumbUrl = (videoId) => `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f8f9ff", backgroundImage: "radial-gradient(ellipse at 20% 0%, rgba(99,102,241,0.07) 0%, transparent 50%), radial-gradient(ellipse at 80% 100%, rgba(56,189,248,0.05) 0%, transparent 50%)", fontFamily: "'Noto Sans JP','Hiragino Sans',sans-serif", color: "#111", padding: "28px 16px 80px" }}>
+    <div style={{ minHeight: "100vh", background: "#f8f9ff", fontFamily: "'Noto Sans JP','Hiragino Sans',sans-serif", color: "#111", padding: "28px 16px 80px" }}>
 
       {/* Toast */}
       {toast && (
-        <div style={{ position: "fixed", top: 18, left: "50%", transform: "translateX(-50%)", background: "#6366f1", color: "#fff", padding: "9px 22px", borderRadius: 99, fontSize: 13, fontWeight: 700, zIndex: 9999, boxShadow: "0 4px 18px rgba(99,102,241,0.45)", whiteSpace: "nowrap", pointerEvents: "none" }}>
+        <div style={{ position: "fixed", top: 18, left: "50%", transform: "translateX(-50%)", background: "#C80000", color: "#fff", padding: "9px 22px", borderRadius: 99, fontSize: 13, fontWeight: 700, zIndex: 9999, boxShadow: "0 4px 18px rgba(200,0,0,0.45)", whiteSpace: "nowrap", pointerEvents: "none" }}>
           {toast}
         </div>
       )}
@@ -277,13 +274,13 @@ export default function App() {
                 onChange={e => setSearchQuery(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && doSearch(searchQuery)}
                 style={{ flex: 1, background: "#f9fafb", border: "1px solid #d1d5db", borderRadius: 10, padding: "9px 12px", color: "#111", fontSize: 12, outline: "none" }}
-                onFocus={e => e.target.style.borderColor = "#6366f1"}
+                onFocus={e => e.target.style.borderColor = "#C80000"}
                 onBlur={e => e.target.style.borderColor = "#d1d5db"}
               />
               <button
                 onClick={() => doSearch(searchQuery)}
                 disabled={searching || !searchQuery.trim()}
-                style={{ background: searching || !searchQuery.trim() ? "#e5e7eb" : "linear-gradient(135deg,#6366f1,#a78bfa)", border: "none", borderRadius: 10, padding: "9px 14px", color: searching || !searchQuery.trim() ? "#aaa" : "#fff", fontWeight: 800, fontSize: 12, cursor: searching || !searchQuery.trim() ? "not-allowed" : "pointer", whiteSpace: "nowrap", transition: "all 0.15s" }}
+                style={{ background: searching || !searchQuery.trim() ? "#e5e7eb" : "linear-gradient(135deg,#C80000,#C80000)", border: "none", borderRadius: 10, padding: "9px 14px", color: searching || !searchQuery.trim() ? "#aaa" : "#fff", fontWeight: 800, fontSize: 12, cursor: searching || !searchQuery.trim() ? "not-allowed" : "pointer", whiteSpace: "nowrap", transition: "all 0.15s" }}
               >
                 {searching ? "検索中…" : "🔍 検索"}
               </button>
@@ -305,7 +302,7 @@ export default function App() {
                 {searchResults.map((v, i) => (
                   <button key={i} onClick={() => selectVideo(v)}
                     style={{ display: "flex", alignItems: "center", gap: 10, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 10, padding: "8px 10px", cursor: "pointer", textAlign: "left", transition: "all 0.12s" }}
-                    onMouseEnter={e => { e.currentTarget.style.background = "#eff0ff"; e.currentTarget.style.borderColor = "#a5b4fc"; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = "#eff0ff"; e.currentTarget.style.borderColor = "#ff6666"; }}
                     onMouseLeave={e => { e.currentTarget.style.background = "#f9fafb"; e.currentTarget.style.borderColor = "#e5e7eb"; }}
                   >
                     <div style={{ position: "relative", flexShrink: 0 }}>
@@ -331,8 +328,8 @@ export default function App() {
 
       {/* ── Header ── */}
       <div style={{ textAlign: "center", marginBottom: 26 }}>
-        <div style={{ fontSize: 10, letterSpacing: 4, color: "#6366f1", fontWeight: 700, marginBottom: 8, textTransform: "uppercase" }}>ドズル社 × あなた</div>
-        <h1 style={{ margin: 0, fontSize: 27, fontWeight: 900, background: "linear-gradient(135deg,#818cf8,#a78bfa,#38bdf8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", letterSpacing: -0.5 }}>私を構成する6つのドズル社動画</h1>
+        <div style={{ fontSize: 10, letterSpacing: 4, color: "#C80000", fontWeight: 700, marginBottom: 8, textTransform: "uppercase" }}>ドズル社 × あなた</div>
+        <h1 style={{ margin: 0, fontSize: 27, fontWeight: 900, background: "linear-gradient(135deg,#C80000,#C80000,#38bdf8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", letterSpacing: -0.5 }}>私を構成する6つのドズル社動画</h1>
         
       </div>
 
@@ -341,7 +338,7 @@ export default function App() {
         <label style={{ fontSize: 10, color: "#444", fontWeight: 700, letterSpacing: 1, display: "block", marginBottom: 5 }}>制作者名（任意）</label>
         <input type="text" maxLength={40} placeholder="あなたの名前" value={author} onChange={e => setAuthor(e.target.value)}
           style={{ width: "100%", boxSizing: "border-box", background: "#fff", border: "1px solid #d1d5db", borderRadius: 10, padding: "9px 12px", color: "#111", fontSize: 13, outline: "none" }}
-          onFocus={e => e.target.style.borderColor = "#6366f1"} onBlur={e => e.target.style.borderColor = "#d1d5db"}
+          onFocus={e => e.target.style.borderColor = "#C80000"} onBlur={e => e.target.style.borderColor = "#d1d5db"}
         />
         <div style={{ textAlign: "right", fontSize: 9, color: "#2a2a3a", marginTop: 3 }}>{author.length}/40</div>
       </div>
@@ -350,9 +347,9 @@ export default function App() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8, maxWidth: 540, margin: "0 auto 20px" }}>
         {cells.map((cell, i) => (
           <div key={i} onClick={() => openModal(i)}
-            style={{ aspectRatio: "16/10", background: cell ? "transparent" : "#f3f4ff", border: `1px solid ${cell ? "rgba(99,102,241,0.3)" : "#dde0f5"}`, borderRadius: 12, position: "relative", cursor: "pointer", overflow: "hidden", transition: "border-color 0.18s, box-shadow 0.18s" }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "#6366f150"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(99,102,241,0.14)"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = cell ? "rgba(99,102,241,0.3)" : "#dde0f5"; e.currentTarget.style.boxShadow = "none"; }}
+            style={{ aspectRatio: "16/10", background: cell ? "transparent" : "#f3f4ff", border: `1px solid ${cell ? "rgba(200,0,0,0.3)" : "#dde0f5"}`, borderRadius: 12, position: "relative", cursor: "pointer", overflow: "hidden", transition: "border-color 0.18s, box-shadow 0.18s" }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "#C8000050"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(200,0,0,0.14)"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = cell ? "rgba(200,0,0,0.3)" : "#dde0f5"; e.currentTarget.style.boxShadow = "none"; }}
           >
             {/* Number badge */}
             <div style={{ position: "absolute", top: 5, left: 7, zIndex: 3, fontSize: 9, fontWeight: 800, color: cell ? "rgba(255,255,255,0.7)" : "#2a2a40", textShadow: cell ? "0 1px 3px rgba(0,0,0,0.8)" : "none" }}>{i + 1}</div>
@@ -406,7 +403,7 @@ export default function App() {
           <span>{Math.round(filledCount / 6 * 100)}%</span>
         </div>
         <div style={{ height: 3, background: "#111", borderRadius: 99, overflow: "hidden" }}>
-          <div style={{ height: "100%", width: `${filledCount / 6 * 100}%`, background: filledCount === 6 ? "linear-gradient(90deg,#6366f1,#38bdf8)" : "linear-gradient(90deg,#6366f1,#a78bfa)", borderRadius: 99, transition: "width 0.4s ease" }} />
+          <div style={{ height: "100%", width: `${filledCount / 6 * 100}%`, background: filledCount === 6 ? "linear-gradient(90deg,#C80000,#38bdf8)" : "linear-gradient(90deg,#C80000,#C80000)", borderRadius: 99, transition: "width 0.4s ease" }} />
         </div>
       </div>
 
@@ -426,7 +423,7 @@ export default function App() {
             📋 テキストコピー
           </button>
           <button onClick={handleDownload} disabled={filledCount === 0 || generating}
-            style={{ flex: 1, padding: "11px", background: "#f3f4f6", border: filledCount === 0 ? "1px solid #e5e7eb" : "1px solid #a5b4fc", borderRadius: 12, color: filledCount === 0 ? "#ccc" : "#6366f1", fontSize: 12, fontWeight: 700, cursor: filledCount === 0 || generating ? "not-allowed" : "pointer" }}>
+            style={{ flex: 1, padding: "11px", background: "#f3f4f6", border: filledCount === 0 ? "1px solid #e5e7eb" : "1px solid #ff6666", borderRadius: 12, color: filledCount === 0 ? "#ccc" : "#C80000", fontSize: 12, fontWeight: 700, cursor: filledCount === 0 || generating ? "not-allowed" : "pointer" }}>
             ⬇️ 画像だけDL
           </button>
         </div>
