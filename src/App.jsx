@@ -432,7 +432,7 @@ export default function App() {
         </div>
       </div>
 
-      <div style={{ textAlign: "center", marginTop: 24, fontSize: 11, color: "#aaa" }}>©Dozle Corp.</div>
+      <div style={{ textAlign: "center", marginTop: 24, fontSize: 11, color: "#aaa" }}>©DOZLE Corp.</div>
 
       <style>{`
         * { box-sizing: border-box; }
