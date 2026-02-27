@@ -18,13 +18,13 @@ function imgElementToImageData(imgEl) {
 }
 
 async function generateShareCanvas(cells, authorName, imgEls) {
-  const CELL_W = 220, CELL_H = 140, GAP = 8, PAD = 20;
-  const HEADER_H = 90, FOOTER_H = 64;
-  const W = COLS * CELL_W + (COLS - 1) * GAP + PAD * 2;
-  const H = HEADER_H + ROWS * CELL_H + (ROWS - 1) * GAP + PAD * 2 + FOOTER_H;
+  const CELL_W = 216, CELL_H = 143, GAP = 8, PAD = 20;
+  const HEADER_H = 90, FOOTER_H = 65;
+  const W = COLS * CELL_W + (COLS - 1) * GAP + PAD * 2; // 480
+  const H = HEADER_H + ROWS * CELL_H + (ROWS - 1) * GAP + PAD * 2 + FOOTER_H; // 640
 
   const canvas = document.createElement("canvas");
-  canvas.width = W * 2; canvas.height = H * 2;
+  canvas.width = W * 2; canvas.height = H * 2; // 960x1280
   const ctx = canvas.getContext("2d");
   ctx.scale(2, 2);
 
