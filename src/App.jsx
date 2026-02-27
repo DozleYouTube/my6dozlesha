@@ -261,7 +261,7 @@ export default function App() {
               <input
                 ref={searchRef}
                 type="text"
-                placeholder="例：終われません、大富豪おじいちゃん、エンドラ討伐…"
+                placeholder="例：終われません、エンドラ討伐…"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && doSearch(searchQuery)}
